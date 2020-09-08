@@ -53,9 +53,13 @@ function tatt_test_pkg
     TFEATURES="${FEATURES} test"
   else
     TFEATURES="${FEATURES}"
+      if ! emerge --onlydeps -1 ${TATT_EMERGEOPTS} "${1:?}"; then
+        echo "merging dependencies of ${1} failed" >> "${TATT_REPORTFILE}"
+        return 0
+      fi
   fi
 
-  eout=$( FEATURES="${TFEATURES}" emerge -1 ${TATT_EMERGEOPTS} "${1:?}" 2>&1 1>/dev/tty )
+  eout=$( FEATURES="${TFEATURES}" emerge -1 --usepkg n --buildpkg n ${TATT_EMERGEOPTS} "${1:?}" 2>&1 1>/dev/tty )
   if [[ $? == 0 ]] ; then
     if [ -n "${TFEATURES}" ]; then
       echo -n "FEATURES='${TFEATURES}' " >> "${TATT_REPORTFILE}"
